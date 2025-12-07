@@ -112,30 +112,25 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < FILEBLOCK; i++)
         block[i] = 'a' + (i % NCHARS);
 
-    // --- Direct blocks ---
     cout << "writing to direct blocks ********************************************" << endl;
     filewrite(filename(1).c_str(), 1, block);    // first direct block
     filewrite(filename(12).c_str(), 12, block);  // all direct blocks
 
-    // --- Single indirect blocks ---
     cout << "writing to 1st indirect blocks **************************************" << endl;
-    int single_indirect_ptrs = 1024;             // pointers in single indirect block
+    int single_indirect_ptrs = 1024;             // ptrs in single indirect block
     filewrite(filename(13).c_str(), 13, block);  // direct + first single indirect
     filewrite(filename(12 + single_indirect_ptrs).c_str(), 12 + single_indirect_ptrs, block); // full single indirect
 
-    // --- Double indirect blocks ---
     cout << "writing to 2ndary indirect blocks *******************************" << endl;
     int double_indirect_ptrs = 1024; // just test first block
     filewrite(filename(12 + single_indirect_ptrs + 1).c_str(), 12 + single_indirect_ptrs + 1, block); // first double indirect
 
-    // --- Triple indirect blocks ---
     cout << "writing to 3tiary indirect blocks *******************************" << endl;
     filewrite(filename(12 + single_indirect_ptrs + double_indirect_ptrs + 1).c_str(),
               12 + single_indirect_ptrs + double_indirect_ptrs + 1, block); // first triple indirect
 
     cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 
-    // --- Reading ---
     cout << "reading direct blocks ********************************************" << endl;
     fileread(filename(1).c_str(), 1, block);
     fileread(filename(12).c_str(), 12, block);
