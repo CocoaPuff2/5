@@ -15,8 +15,8 @@ int filewrite( const char* filename, int nblocks, char* block ) {
   // CREAT: create file is not already exists
   // TRUNC: if file exists, truncate to 0 bytes, erases all content
   // 0666 is permission bits for writing a new file
-  int fd = open(filename, O_WRONLY, O_CREAT, O_TRUNC, 0666);
-  if (fd < 0) {
+    int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    if (fd < 0) {
       cerr << "Error opening file to write" << endl;
       return -1;
   }
