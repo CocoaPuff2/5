@@ -105,53 +105,51 @@ string filename( int i ){
   string filename_str = "f_" + num + ".txt";
   return filename_str;
 }
-
 int main(int argc, char* argv[]) {
-    // initialize block with repeating letters
     char block[FILEBLOCK];
+
+    // initialize block with repeating letters
     for (int i = 0; i < FILEBLOCK; i++)
         block[i] = 'a' + (i % NCHARS);
 
+    // --- Direct blocks ---
     cout << "writing to direct blocks ********************************************" << endl;
-    filewrite(filename(1).c_str(), 1, block);    // 1 block, first direct pointer
-    filewrite(filename(12).c_str(), 12, block);  // 12 blocks, all direct pointers
+    filewrite(filename(1).c_str(), 1, block);    // first direct block
+    filewrite(filename(12).c_str(), 12, block);  // all direct blocks
 
+    // --- Single indirect blocks ---
     cout << "writing to 1st indirect blocks **************************************" << endl;
-    int single_indirect_blocks = 256; // 4 KB / 4 Bytes per pointer = 1024 ptrs, so went with 256
-    filewrite(filename(13).c_str(), 13, block);              // direct + first of single indirect
-    filewrite(filename(12 + single_indirect_blocks).c_str(), 12 + single_indirect_blocks, block); // full single indirect
+    int single_indirect_ptrs = 1024;             // pointers in single indirect block
+    filewrite(filename(13).c_str(), 13, block);  // direct + first single indirect
+    filewrite(filename(12 + single_indirect_ptrs).c_str(), 12 + single_indirect_ptrs, block); // full single indirect
 
+    // --- Double indirect blocks ---
     cout << "writing to 2ndary indirect blocks *******************************" << endl;
-    int double_indirect_blocks = 256 * 256;
-    filewrite(filename(12 + single_indirect_blocks + 1).c_str(), 12 + single_indirect_blocks + 1, block); // first block of double indirect
-    filewrite(filename(12 + single_indirect_blocks + double_indirect_blocks).c_str(),
-              12 + single_indirect_blocks + double_indirect_blocks, block); // full double indirect
+    int double_indirect_ptrs = 1024; // just test first block
+    filewrite(filename(12 + single_indirect_ptrs + 1).c_str(), 12 + single_indirect_ptrs + 1, block); // first double indirect
 
     // --- Triple indirect blocks ---
     cout << "writing to 3tiary indirect blocks *******************************" << endl;
-    int triple_indirect_blocks = 256 * 256 * 256;
-    filewrite(filename(12 + single_indirect_blocks + double_indirect_blocks + 1).c_str(),
-              12 + single_indirect_blocks + double_indirect_blocks + 1, block);
+    filewrite(filename(12 + single_indirect_ptrs + double_indirect_ptrs + 1).c_str(),
+              12 + single_indirect_ptrs + double_indirect_ptrs + 1, block); // first triple indirect
 
     cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 
-    // --- Reading files ---
+    // --- Reading ---
     cout << "reading direct blocks ********************************************" << endl;
     fileread(filename(1).c_str(), 1, block);
     fileread(filename(12).c_str(), 12, block);
 
     cout << "reading 1st indirect blocks **************************************" << endl;
     fileread(filename(13).c_str(), 13, block);
-    fileread(filename(12 + single_indirect_blocks).c_str(), 12 + single_indirect_blocks, block);
+    fileread(filename(12 + single_indirect_ptrs).c_str(), 12 + single_indirect_ptrs, block);
 
     cout << "reading 2ndary indirect blocks *******************************" << endl;
-    fileread(filename(12 + single_indirect_blocks + 1).c_str(), 12 + single_indirect_blocks + 1, block);
-    fileread(filename(12 + single_indirect_blocks + double_indirect_blocks).c_str(),
-             12 + single_indirect_blocks + double_indirect_blocks, block);
+    fileread(filename(12 + single_indirect_ptrs + 1).c_str(), 12 + single_indirect_ptrs + 1, block);
 
     cout << "reading 3tiary indirect blocks *******************************" << endl;
-    fileread(filename(12 + single_indirect_blocks + double_indirect_blocks + 1).c_str(),
-             12 + single_indirect_blocks + double_indirect_blocks + 1, block);
+    fileread(filename(12 + single_indirect_ptrs + double_indirect_ptrs + 1).c_str(),
+             12 + single_indirect_ptrs + double_indirect_ptrs + 1, block);
 
     return 0;
 }
